@@ -2,7 +2,7 @@
 
 echo 'Install EPEL repo'
 yum install -y epel-release git expect
-yum update -y
+yum update --security -y
 echo -e '\033[35;5m Stop SSH Host Key Checking . . . \033[0m'
 sudo sed -i 's/#.*StrictHostKeyChecking .*/StrictHostKeyChecking no/' /etc/ssh/ssh_config
 
