@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 echo 'Install EPEL repo'
-yum install -y epel-release git expect
-yum update --security -y
+yum install -y epel-release git expect docker
+yum update -y
 echo -e '\033[35;5m Stop SSH Host Key Checking . . . \033[0m'
 sudo sed -i 's/#.*StrictHostKeyChecking .*/StrictHostKeyChecking no/' /etc/ssh/ssh_config
 
@@ -36,3 +36,21 @@ sed -i 's/-F __start_kubectl kubectl/-F __start_kubectl k/g' /etc/bash_completio
 echo "source completion"
 ## Enable completion: completion is installed at /etc/bash_completion.d/azure-cli
 source /etc/bash_completion.d/azure-cli /etc/bash_completion.d/kubens /etc/bash_completion.d/kubectx /etc/bash_completion.d/kubectl /etc/bash_completion.d/k
+
+## Install Helm V3:
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+
+## Install Development tools
+yum groupinstall "Development tools" -y
+
+## Install Jsonnet
+echo "Install Jsonnet!!!!"
+cd /root
+git clone https://github.com/google/jsonnet.git 
+cd jsonnet
+make 
+
+# Add to $Path
+echo "Configure Path"
+grep 'jsonnet' ~/.bash_profile || sed -i '$ a\export PATH=$PATH:/root/jsonnet' ~/.bash_profile
