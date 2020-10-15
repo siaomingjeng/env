@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo 'Install EPEL repo'
-yum install -y epel-release git expect docker
+yum install -y epel-release git expect
 yum update -y
 echo -e '\033[35;5m Stop SSH Host Key Checking . . . \033[0m'
 sudo sed -i 's/#.*StrictHostKeyChecking .*/StrictHostKeyChecking no/' /etc/ssh/ssh_config
@@ -40,6 +40,8 @@ source /etc/bash_completion.d/azure-cli /etc/bash_completion.d/kubens /etc/bash_
 ## Install Helm V3:
 curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
+## Install docker
+yum install -y docker
 
 ## Install Development tools
 yum groupinstall "Development tools" -y
