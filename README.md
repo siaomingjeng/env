@@ -6,3 +6,6 @@
 ## Azure CLI:
 - az group create --name \<rg name\> --location \<location\>
 - az group deployment create -g \<rg name\> --template-file \<ARM template\> --parameters @\<file\> --query properties.outputs
+
+## Functionalitiy:
+- minikube_env.sh: create a testing minikbue env
