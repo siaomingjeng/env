@@ -1,0 +1,100 @@
+Example of Hello World with KUMA.
+
+************ Minikube - Installation *****************
+Refer to own file: minikube_env.sh
+
+************ KUMA - Installation *********************
+DOC: https://kuma.io/docs/1.0.3/installation/kubernetes/
+
+************ KUMA - Quick Start **********************
+DOC: https://kuma.io/docs/1.0.3/quickstart/kubernetes/
+
+************ Minikube - MetalLB **********************
+  DOC: https://medium.com/faun/metallb-configuration-in-minikube-to-enable-kubernetes-service-of-type-loadbalancer-9559739787df
+minikube addons enable metallb # Enable metallb
+minikube addons list # list addons
+  # The controller helps in the IP address assignment, whereas the speaker advertises layer -2 address.
+minikube addons configure metallb # Config metallb
+  # It will prompt for the IP Address range. As my minikube host IP is 10.211.55.6, I have given the range as 10.211.55.105-10.211.55.150.
+kubectl describe configmap config -n metallb-system # IP range can be changed in this configmap
+  # MetalLB offical DOC: https://metallb.universe.tf
+*********** Minikube - Deploy Hello World Example ****
+# Namespace: -----------------------------------------------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hello-world
+  annotations:
+    kuma.io/sidecar-injection: enabled   ######
+# Deployments.app: -----------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world
+  namespace: hello-world
+spec:
+  selector:
+    matchLabels:
+      run: load-balancer-example
+  replicas: 2
+  template:
+    metadata:
+      annotations:
+        kuma.io/gateway: enabled     ######
+      labels:
+        run: load-balancer-example
+    spec:
+      containers:
+        - name: hello-world
+          image: gcr.io/google-samples/node-hello:1.0
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+# Service: -------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    ingress.kubernetes.io/service-upstream: \"true\"   ######
+  name: eg-service
+  namespace: hello-world
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    run: load-balancer-example
+  type: LoadBalancer
+
+# Note: pay attention to the lines with ######, they are learnt from doc: https://konghq.com/blog/exposing-kuma-service-mesh-using-kong-api-gateway/
+# Note: if use echo ""|kubectl -f -, please change "true" to \"true\".
+************ KUMA - Mutual TLS *****************************
+# DOC: https://kuma.io/docs/1.0.3/quickstart/kubernetes/
+apiVersion: kuma.io/v1alpha1
+kind: Mesh
+metadata:
+  name: default
+spec:
+  mtls:
+    enabledBackend: ca-1
+    backends:
+    - name: ca-1
+      type: builtin
+
+************ KUMA - Traffic Permission *********************
+# DOC: https://kuma.io/docs/1.0.3/quickstart/kubernetes/
+apiVersion: kuma.io/v1alpha1
+kind: TrafficPermission
+mesh: default
+metadata:
+  namespace: default
+  name: all-traffic-allowed
+spec:
+  sources:
+    - match:
+        kuma.io/service: '*'
+  destinations:
+    - match:
+        kuma.io/service: '*'
+
