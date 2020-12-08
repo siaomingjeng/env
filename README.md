@@ -10,3 +10,5 @@
 ## Functionalitiy:
 - minikube_env.sh: create a testing minikbue env
 - ansible_install8.sh: install Ansible in CentOS 8
+- env-k8s.sh: prepare an environment for Kubernetes/AKS use
+- diff: compare text files
