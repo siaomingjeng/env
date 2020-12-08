@@ -11,4 +11,5 @@
 - minikube_env.sh: create a testing minikbue env
 - ansible_install8.sh: install Ansible in CentOS 8
 - env-k8s.sh: prepare an environment for Kubernetes/AKS use
-- diff: compare text files
+- diff.py: python3 script to compare text files
+- kuma-example.txt: an example to set up KUMA and expose services with MetalLB.
